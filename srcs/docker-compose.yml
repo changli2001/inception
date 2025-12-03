@@ -1,0 +1,46 @@
+services:
+  nginx:
+    build : ./requirements/nginx
+    image : nginx:inception
+    ports:
+      - "443:443"
+    container_name: nginx_service
+    env_file:
+      - .env
+    networks:
+      - docker_network
+    volumes:
+      - /home/ochangli/data/WordPress:/var/www/wordpress
+    depends_on:
+      - wordpress
+    restart: always
+#MariaDB 
+  mariadb:
+    build: ./requirements/MariaDB
+    image: mariadb:inception
+    container_name: MariaDb_service
+    env_file:
+      - .env
+    networks:
+      - docker_network
+    volumes:
+       - /home/ochangli/data/MariaDB:/var/lib/mysql
+    restart: always
+#WordPress
+  wordpress:
+      build : ./requirements/WordPress
+      image : wordpress:inception
+      container_name: WordPress_service
+      env_file:
+        - .env
+      networks:
+        - docker_network
+      volumes:
+        - /home/ochangli/data/WordPress:/var/www/html
+      depends_on:
+        - mariadb
+      restart: always
+networks:
+  docker_network:
+    name: docker_network
+    driver: bridge
